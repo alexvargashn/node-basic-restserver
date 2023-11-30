@@ -66,7 +66,7 @@ const getAll = async (req = request, res = response) => {
 
  const createRole = async (req = request, res = response) => {
     const {role} = req.body;
-    const _role = new Role({role});
+    const _role = new Role({...req.body});
 
     await _role.save();
 
