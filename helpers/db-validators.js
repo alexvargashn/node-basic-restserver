@@ -9,6 +9,13 @@ const isValidRole = async (role = '') => {
     }
 }
 
+const existRoleById = async(id) => {
+    const existRoleById = await Role.findById(id);
+
+    if(!existRoleById)
+        throw new Error(`There is not a role by id: ${id}`);
+}
+
 const existUserById = async (id) => {
     const existUserById = await User.findById(id);
     if(!existUserById) {
@@ -27,5 +34,6 @@ const existEmail = async (email) => {
 module.exports = {
     isValidRole,
     existUserById,
+    existRoleById,
     existEmail
 }

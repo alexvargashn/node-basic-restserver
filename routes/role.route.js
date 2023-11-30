@@ -3,7 +3,7 @@ const {check} = require('express-validator');
 const { validateFields } = require('../helpers/validateFields');
 const { validateJWT } = require('../middlewares/validate-jwt');
 const { getOne, createRole, updateRole, deleteRole, getAll } = require('../controllers/role.controller');
-const { isValidRole } = require('../helpers/db-validators');
+const { isValidRole, existRoleById } = require('../helpers/db-validators');
 
 const router = Router();
 
@@ -21,12 +21,14 @@ router.post('/', [
 
 router.put('/:role', [
     check('role').custom(isValidRole),
+    check('description', 'Please, enter a brief description for the role').not().isEmpty(),
     validateFields
 ], updateRole);
 
-router.delete('/:role', [
+router.delete('/:id', [
     validateJWT,
-    check('role').custom(isValidRole),
+    check('id', 'Is not a valid ID').isMongoId(),
+    check('id').custom(existRoleById),
     validateFields
 ], deleteRole);
 

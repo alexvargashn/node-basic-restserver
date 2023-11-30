@@ -79,15 +79,14 @@ const getAll = async (req = request, res = response) => {
 
 
  const deleteRole = async (req, res = response) => {
-    const { role } = req.params;
-    const uid = req.uid;
+    const { id } = req.params;
 
    // const usuario = await Usuario.findByIdAndDelete( id );
-    const _role = await Role.findOneAndUodate(role, {state: false});
+    const role = await Role.findByIdAndUpdate(id, { state: false }, { new: true });
 
     res.json({ 
         ok: true,
-        role: _role
+        role
      });
  }
 

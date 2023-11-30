@@ -41,7 +41,7 @@ router.put('/:id', [
     validateFields
 ], uploadImageUser);
 
-router.delete('/:role', [
+router.delete('/:id', [
     validateJWT,
     check('role').custom(isValidRole),
     check('id', 'Is not a valid ID').isMongoId(),
