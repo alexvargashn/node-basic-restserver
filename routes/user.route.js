@@ -13,7 +13,6 @@ router.get('/', getAll);
 router.get('/:id', [
     check('id', 'It is not a valid ID').isMongoId(),
     check('id').custom(existUserById),
-    check('rol').custom(isValidRole),
     validateFields
 ], getOne)
 
@@ -28,6 +27,7 @@ router.post('/', [
 ], createUser);
 
 router.put('/:id', [
+    validateJWT,
     check('id', 'Is not a valid ID').isMongoId(),
     check('id').custom(existUserById),
     check('role').custom(isValidRole),
