@@ -62,13 +62,12 @@ const updateUser = async (req, res = response) => {
 }
 
 const createUser = async (req = request, res = response) => {
-    const { name, password, email, role } = req.body;
-    const { _id } = await Role.findOne({ role });
-    const user = new User({ name, password, email, role: _id });
+    console.log(req.body);
+    const user = new User({ ...req.body});
 
 
     const salt = bcryptjs.genSaltSync(10);
-    user.password = bcryptjs.hashSync(password, salt);
+    user.password = bcryptjs.hashSync(req.body.password, salt);
 
     await user.save();
 

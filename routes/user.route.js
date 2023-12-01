@@ -22,7 +22,7 @@ router.post('/', [
     check('email', 'The email is not valid')
         .isEmail()
         .custom(existEmail),
-    check('role').custom(isValidRole),
+    //check('role').custom(isValidRole),
     validateFields
 ], createUser);
 
