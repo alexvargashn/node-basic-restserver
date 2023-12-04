@@ -25,16 +25,17 @@ const login = async (req, res = response) => {
 
         if(!bcryptjs.compareSync(password, user.password)) {
             return res.status(400).json({
+                ok: false,
                 msg: 'User or password does not match with correct values.'
             })
         }
 
         const token = await generateJWT(user.id);
 
+        res.cookie('rs_token', token);
         res.json({
             ok: true,
-            user,
-            token
+            user
         })
     } catch (error) {
         console.log(error);
