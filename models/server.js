@@ -15,7 +15,9 @@ class Server {
         this.paths = {
             usersPath: '/api/users',
             rolesPath: '/api/roles',
-            authPath:  '/api/auth'
+            authPath:  '/api/auth',
+            categoriesPath: '/api/categories',
+            productsPath: '/api/products'
         };
 
         this.dbConnect();
@@ -43,6 +45,8 @@ class Server {
         this.app.use(this.paths.usersPath, require('../routes/user.route'));
         this.app.use(this.paths.rolesPath, require('../routes/role.route'));
         this.app.use(this.paths.authPath, require('../routes/auth.route.js'));
+        this.app.use(this.paths.categoriesPath, require('../routes/category.route.js'));
+        this.app.use(this.paths.productsPath, require('../routes/product.route.js')); 
     }
 
     listen() {
