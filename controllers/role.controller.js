@@ -1,4 +1,4 @@
-const {response, request} = require('express');
+const { response, request } = require('express');
 const bcryptjs = require('bcryptjs');
 
 const Role = require('../models/role');
@@ -14,9 +14,9 @@ const Role = require('../models/role');
  */
 const getAll = async (req = request, res = response) => {
     const { limit = 5, since = 0 } = req.query;
-    const query = { state : true };
+    const query = { state: true };
 
-    const [ total, roles ] = await Promise.all([
+    const [total, roles] = await Promise.all([
         Role.countDocuments(query),
         Role.find(query)
             .skip(Number(since))
@@ -28,73 +28,58 @@ const getAll = async (req = request, res = response) => {
         total,
         roles
     });
- }
+}
 
- const getOne = async (req = request, res = response) => {
-    const { role } = req.params;
+const getOne = async (req = request, res = response) => {
+    const { id } = req.params;
 
-    const _role = Role.findOne({role});
-    if(_role) {
-        res.json({
-            ok: true,
-            _role
-        })
-    } else {
-        res.status(404).json({
-            ok: false,
-            msg: 'There is no one role with the name: ' + role
-        })
-    }
- }
+    const role = await Role.findById(id);
+    res.json({
+        ok: true,
+        role
+    })
+}
 
- const updateRole = async(req, res = response) => {
-    const { role } = req.params;
+const updateRole = async (req, res = response) => {
+    const { id } = req.params;
 
-    if(password) {
-        const salt = bcryptjs.genSaltSync(10); 
-        other.password = bcryptjs.hashSync(password, salt);
-    }
-
-    const _role = await Role.findOneAndUodate({role}, role);
+    const role = await Role.findByIdAndUpdate(id, { ...req.body }, { new: true });
 
     res.json({
         ok: true,
-        role: _role
+        role
     });
 
- }
+}
 
- const createRole = async (req = request, res = response) => {
-    const {role} = req.body;
-    const _role = new Role({role});
+const createRole = async (req = request, res = response) => {
+    const role = new Role({ ...req.body });
 
-    await _role.save();
+    await role.save();
 
     res.json({
         ok: true,
         msg: 'All ok',
-        role: _role
+        role
     })
- }
+}
 
 
- const deleteRole = async (req, res = response) => {
-    const { role } = req.params;
-    const uid = req.uid;
+const deleteRole = async (req, res = response) => {
+    const { id } = req.params;
 
-   // const usuario = await Usuario.findByIdAndDelete( id );
-    const _role = await Role.findOneAndUodate(role, {state: false});
+    const role = await Role.findByIdAndUpdate(id, { state: false }, { new: true });
 
-    res.json({ 
+    res.json({
         ok: true,
-        role: _role
-     });
- }
+        role
+    });
+}
 
- module.exports = {
+module.exports = {
     getAll,
     getOne,
     createRole,
     updateRole,
     deleteRole
- }
+}

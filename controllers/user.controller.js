@@ -1,4 +1,4 @@
-const {response, request} = require('express');
+const { response, request } = require('express');
 const bcryptjs = require('bcryptjs');
 
 const User = require('../models/user');
@@ -16,9 +16,9 @@ const { uploadFile } = require('../helpers/upload-file');
  */
 const getAll = async (req = request, res = response) => {
     const { limit = 5, since = 0 } = req.query;
-    const query = { state : true };
+    const query = { state: true };
 
-    const [ total, users ] = await Promise.all([
+    const [total, users] = await Promise.all([
         User.countDocuments(query),
         User.find(query)
             .populate('role', 'role')
@@ -31,31 +31,24 @@ const getAll = async (req = request, res = response) => {
         total,
         users
     });
- }
+}
 
- const getOne = async (req = request, res = response) => {
+const getOne = async (req = request, res = response) => {
     const { id } = req.params;
 
-    const user = User.findById(id);
-    if(user) {
-        res.json({
-            ok: true,
-            user
-        })
-    } else {
-        res.status(404).json({
-            ok: false,
-            msg: 'There is no one user with this id: ' + id
-        })
-    }
- }
+    const user = await User.findById(id);
+    res.json({
+        ok: true,
+        user
+    });
+}
 
- const updateUser = async(req, res = response) => {
+const updateUser = async (req, res = response) => {
     const { id } = req.params;
     const { _id, password, email, ...other } = req.body;
 
-    if(password) {
-        const salt = bcryptjs.genSaltSync(10); 
+    if (password) {
+        const salt = bcryptjs.genSaltSync(10);
         other.password = bcryptjs.hashSync(password, salt);
     }
 
@@ -66,16 +59,15 @@ const getAll = async (req = request, res = response) => {
         user
     });
 
- }
+}
 
- const createUser = async (req = request, res = response) => {
-    const {name, password, email, role} = req.body;
-    const { _id } = await Role.findOne({role});
-    const user = new User({name, password, email, role: _id});
-    
+const createUser = async (req = request, res = response) => {
+    console.log(req.body);
+    const user = new User({ ...req.body});
+
 
     const salt = bcryptjs.genSaltSync(10);
-    user.password = bcryptjs.hashSync(password, salt);
+    user.password = bcryptjs.hashSync(req.body.password, salt);
 
     await user.save();
 
@@ -84,56 +76,54 @@ const getAll = async (req = request, res = response) => {
         msg: 'All ok',
         user
     })
- }
+}
 
- const uploadImageUser = async (req = request, res = response) => {
-    if(!req.files  || Object.keys(req.files).length === 0 || !req.files.file) {
+const uploadImageUser = async (req = request, res = response) => {
+    if (!req.files || Object.keys(req.files).length === 0 || !req.files.file) {
         res.status(400).json({
             ok: false,
             msg: 'There is not files on request.'
         });
         return;
-    } 
-    
+    }
+
     try {
         const { id } = req.params;
         const { _id, password, email, ...other } = req.body;
-    
-        if(password) {
-            const salt = bcryptjs.genSaltSync(10); 
+
+        if (password) {
+            const salt = bcryptjs.genSaltSync(10);
             other.password = bcryptjs.hashSync(password, salt);
         }
-    
+
         res.json({
             ok: true,
             user
         });
         const name = await uploadFile(req.files, undefined, 'users');
-        const user = await User.findByIdAndUpdate(id, {image: name});
+        const user = await User.findByIdAndUpdate(id, { image: name });
         res.json({
             ok: true,
             name
         })
     } catch (error) {
-        res.status(400).json({error});
+        res.status(400).json({ error });
     }
- }
+}
 
- const deleteUser = async (req, res = response) => {
+const deleteUser = async (req, res = response) => {
     const { id } = req.params;
-    const uid = req.uid;
 
-   // const usuario = await Usuario.findByIdAndDelete( id );
-    const user = await User.findByIdAndUpdate(id, {state: false});
+    const user = await User.findByIdAndUpdate(id, { state: false }, { new: true });
 
     res.json({ user });
- }
+}
 
- module.exports = {
+module.exports = {
     getAll,
     getOne,
     createUser,
     updateUser,
     uploadImageUser,
     deleteUser
- }
+}

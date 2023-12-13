@@ -13,7 +13,6 @@ router.get('/', getAll);
 router.get('/:id', [
     check('id', 'It is not a valid ID').isMongoId(),
     check('id').custom(existUserById),
-    check('rol').custom(isValidRole),
     validateFields
 ], getOne)
 
@@ -23,11 +22,12 @@ router.post('/', [
     check('email', 'The email is not valid')
         .isEmail()
         .custom(existEmail),
-    check('role').custom(isValidRole),
+    //check('role').custom(isValidRole),
     validateFields
 ], createUser);
 
 router.put('/:id', [
+    validateJWT,
     check('id', 'Is not a valid ID').isMongoId(),
     check('id').custom(existUserById),
     check('role').custom(isValidRole),
@@ -41,7 +41,7 @@ router.put('/:id', [
     validateFields
 ], uploadImageUser);
 
-router.delete('/:role', [
+router.delete('/:id', [
     validateJWT,
     check('role').custom(isValidRole),
     check('id', 'Is not a valid ID').isMongoId(),
